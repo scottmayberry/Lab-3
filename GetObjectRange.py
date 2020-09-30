@@ -20,7 +20,7 @@ pub = rospy.Publisher('/ChaseObject', Pose2D, queue_size=10)
 rospy.init_node('Convert_Cam_Lidar_to_Range', anonymous=True)
 
 def getCurrentMillis():
-    return int(round(time.time() * 1000))
+    return int(round(time() * 1000))
 
 def detectObjectCameraCallback(data):
     detectObjectQueue.append([data, getCurrentMillis])
