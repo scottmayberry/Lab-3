@@ -8,10 +8,17 @@ from std_msgs.msg import String
 from cv_bridge import CvBridge
 from geometry_msgs.msg import Point
 
-min_neon_green = np.array([163, 21, 90])
-max_neon_green = np.array([177, 180, 255])
+#threshold values for HSV filter for pink volleyball
+min_neon_pink = np.array([163, 21, 90])
+max_neon_pink = np.array([177, 180, 255])
+
+#rospy publish node
 pub = rospy.Publisher('/get_object_range', Point, queue_size=10)
+
+#rospy init node
 rospy.init_node('detect_object', anonymous=True)
+
+#cv bridge used for converting pi camera data to numpy
 br = CvBridge()
 
 def findCenterPixel(img_sen, min_mask_value, max_mask_value, maskIteration=1):
@@ -31,9 +38,9 @@ def findCenterPixel(img_sen, min_mask_value, max_mask_value, maskIteration=1):
     return x,y
 
 def callback(data):
-    global min_neon_green, max_neon_green, pub
+    global min_neon_pink, max_neon_pink, pub
     img_sen = br.compressed_imgmsg_to_cv2(data)
-    x,y = findCenterPixel(img_sen, min_neon_green, max_neon_green)
+    x,y = findCenterPixel(img_sen, min_neon_pink, max_neon_pink)
     hough_circle_msg = Point(x, y, 0)
     pub.publish(hough_circle_msg)
 
