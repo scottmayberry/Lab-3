@@ -4,7 +4,7 @@ import rospy
 import numpy as np
 from sensor_msgs.msg import LaserScan
 from std_msgs.msg import String
-from geometry_msgs.msg import Point
+from geometry_msgs.msg import Point, Pose2D
 from time import time
 
 laserScanQueue = []
@@ -14,7 +14,7 @@ max_queue_size = 3
 max_millis_between_reads = 100
 
 #rospy publish node
-pub = rospy.Publisher('/ChaseObject', Point, queue_size=10)
+pub = rospy.Publisher('/ChaseObject', Pose2D, queue_size=10)
 
 #rospy init node
 rospy.init_node('Convert_Cam_Lidar_to_Range', anonymous=True)
@@ -41,12 +41,31 @@ def removeOldTimeData(lQ, dQ):
     if(len(dQ) != 0):
         dQ = [x for x in lQ if x[1] - getCurrentMillis() > max_millis_between_reads]
 
+def getBallAngle(ballPosition):
+    ballAngle = (410 - ballPosition.y)*(0.1517073)-31.1
+    return ballAngle
+
+def getLidarAngle(ballAngle, laserData):
+    return laserData.ranges[ballAngle]
+    
+
 def getDistanceAndOrientation(lQ, dQ):
     if(len(lQ) == 0 or len(dQ) == 0):
         return
     laserData = lQ.pop(0)[0]
     ballPosition = dQ.pop(0)[0]
-    
+    ballAngle = int(getBallAngle(ballPosition))
+    print("ball angle")
+    print(ballAngle)
+    lidarValue = getLidarAngle(ballAngle, laserData)
+    if(lidarValue < 0.1 or lidarValue > 3.5):
+        print("no lidar in detected angle")
+        return
+    pose2d = Pose2D()
+    pose2d.x = lidarValue
+    pose2d.theta = ballAngle
+    pub.publish(pose2d)
+
 
 def listener(lQ, dQ):
     
