@@ -20,7 +20,6 @@ rospy.init_node('detect_object', anonymous=True)
 
 #cv bridge used for converting pi camera data to numpy
 br = CvBridge()
-#added this test line
 
 def findCenterPixel(img_sen, min_mask_value, max_mask_value, maskIteration=1):
     # convert live stream to HSV
