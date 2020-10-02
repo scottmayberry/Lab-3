@@ -32,8 +32,8 @@ def findCenterPixel(img_sen, min_mask_value, max_mask_value, maskIteration=1):
     xs,ys = np.where(mask)
     #print(xs.shape)
     if xs.shape[0] < 500: return -1,-1
-    x = int(xs.median())
-    y = int(ys.median())
+    x = int(np.median(xs))
+    y = int(np.median(ys))
     print(x,y)
     return x,y
 
